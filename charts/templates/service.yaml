@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "image-registry-metrics-exporter.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "image-registry-metrics-exporter.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "image-registry-metrics-exporter.selectorLabels" . | nindent 4 }}

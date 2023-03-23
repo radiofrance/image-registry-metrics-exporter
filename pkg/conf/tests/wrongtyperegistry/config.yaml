@@ -1,0 +1,9 @@
+registries:
+- domain: eu.gcr.io
+  imagesFilters:
+  - filter
+  tagsFilters:
+    test: toto
+  rateLimitAPI: 5
+  maxConcurrentJobs: 5
+  provider: google

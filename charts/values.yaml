@@ -1,0 +1,89 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/radiofrance/image-registry-metrics
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+
+serviceMonitor:
+  enabled: true
+  interval: 1m
+  labels: {}
+
+podSecurityContext:
+   fsGroup: 2000
+
+securityContext:
+   capabilities:
+     drop:
+     - ALL
+   readOnlyRootFilesystem: true
+   runAsNonRoot: true
+   runAsUser: 1000
+
+service:
+  type: ClusterIP
+  metricsPort:
+   name: http
+   path: /metrics
+  port: 80
+
+resources:
+   limits:
+     cpu: 100m
+     memory: 256Mi
+   requests:
+     cpu: 100m
+     memory: 256Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 1
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Example :
+#  configuration: |
+#    registries:
+#    - domain: eu.gcr.io
+#      imagesFilters:
+#      - image-filter-example
+#      tagsFilters:
+#      - ^latest$
+#      rateLimitAPI: 5
+#      maxConcurrentJobs: 5
+#      provider: google
+#    cron: "0 * * * *"
+configuration: {}
+
+# Credentials defined a secret declared outside this Helm Chart.
+# It should provide a valid Google application service account json.
+# Example :
+# credentials:
+#  secretName: google-credentials
+#  secretKey: application_default_credentials.json
+credentials:
+  secret:
+    name: {}
+    key: {}
+
+# You can use externalSecret to get a secret from secret backend.
+# (Optional) you can directly use credentials from existing secret in previous field.
+# It should be a valid Google application service account json.
+# Secret name and key should be set in field credentials too.
+externalSecret:
+  enabled: false
+  spec: {}

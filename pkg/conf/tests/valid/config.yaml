@@ -1,0 +1,10 @@
+registries:
+- domain: eu.gcr.io
+  imagesFilters:
+  - filter
+  tagsFilters:
+  - latest
+  rateLimitAPI: 5
+  maxConcurrentJobs: 5
+  provider: fake
+cron: "0 * * * *"

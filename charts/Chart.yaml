@@ -1,0 +1,7 @@
+apiVersion: v2
+name: image-registry-metrics-exporter
+description: A Helm chart for Image Registry Metrics Exporter (IRME)
+
+type: application
+version: 0.1.2
+appVersion: 0.1.2
