@@ -1,6 +1,6 @@
 module github.com/radiofrance/image-registry-metrics-exporter
 
-go 1.18
+go 1.20
 
 require (
 	github.com/aptible/supercronic v0.2.2

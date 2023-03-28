@@ -1,16 +1,6 @@
 run:
   timeout: 5m
   concurrency: 4
-  go: '1.17'          # Drop once https://github.com/golangci/golangci-lint/issues/2649 is resolved, or if we start using generic
-linters-settings:
-  gofumpt:
-    # Select the Go version to target.
-    # Default: "1.15"
-    # Deprecated: use the global `run.go` instead.
-    lang-version: "1.17"
-    # Module path which contains the source code being formatted.
-    # Default: ""
-    module-path: image-registry-metrics-exporter
 linters:
   enable-all: true
   disable:
