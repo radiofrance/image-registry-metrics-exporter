@@ -1,26 +1,37 @@
-{{- if .Values.serviceMonitor.enabled }}
----
+{{- if and .Values.metrics.serviceMonitor.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: {{ template "image-registry-metrics-exporter.fullname" . }}
-  namespace: {{ .Release.Namespace }}
-  labels:
-    chart: {{ template "image-registry-metrics-exporter.chart" . }}
-    app: {{ template "image-registry-metrics-exporter.name" . }}
-    release: "{{ .Release.Name }}"
-    heritage: "{{ .Release.Service }}"
-    {{- if .Values.serviceMonitor.labels }}
-    {{- toYaml .Values.serviceMonitor.labels | nindent 4 }}
+  namespace: {{ .Values.metrics.serviceMonitor.namespace | default .Release.Namespace }}
+  labels: {{- include "image-registry-metrics-exporter.labels" . | nindent 4 }}
+    {{- if .Values.metrics.serviceMonitor.labels -}}
+    {{ .Values.metrics.serviceMonitor.labels | toYaml | nindent 4 }}
     {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "image-registry-metrics-exporter.annotations" . | nindent 4 }}
+  {{- end }}
 spec:
   endpoints:
-  - interval: {{ .Values.serviceMonitor.interval }}
-    {{- if .Values.serviceMonitor.scrapeTimeout }}
-    scrapeTimeout: {{ .Values.serviceMonitor.scrapeTimeout }}
-    {{- end }}
-    port: {{ .Values.service.metricsPort.name }}
-    path: {{ .Values.service.metricsPort.path }}
+    - port: metrics
+      path: /metrics
+      {{- if .Values.metrics.serviceMonitor.interval }}
+      interval: {{ .Values.metrics.serviceMonitor.interval }}
+      {{- end }}
+      {{- if .Values.metrics.serviceMonitor.scrapeTimeout }}
+      scrapeTimeout: {{ .Values.metrics.serviceMonitor.scrapeTimeout }}
+      {{- end }}
+      {{- if .Values.metrics.serviceMonitor.relabelings }}
+      relabelings:
+      {{- tpl (.Values.metrics.serviceMonitor.relabelings | toYaml) $ | nindent 8 }}
+      {{- end }}
+      {{- if .Values.metrics.serviceMonitor.metricRelabelings }}
+      metricRelabelings:
+      {{- tpl (.Values.metrics.serviceMonitor.metricRelabelings | toYaml) $ | nindent 8 }}
+      {{- end }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
   selector:
     matchLabels:
       {{- include "image-registry-metrics-exporter.selectorLabels" . | nindent 6 }}

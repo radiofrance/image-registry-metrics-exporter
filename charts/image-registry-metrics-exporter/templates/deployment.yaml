@@ -2,86 +2,106 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "image-registry-metrics-exporter.fullname" . }}
-  namespace: {{ .Release.Namespace }}
-  labels:
-    {{- include "image-registry-metrics-exporter.labels" . | nindent 4 }}
+  labels: {{- include "image-registry-metrics-exporter.labels" . | nindent 4 }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "image-registry-metrics-exporter.annotations" . | nindent 4 }}
+  {{- end }}
 spec:
+  selector:
+    matchLabels: {{- include "image-registry-metrics-exporter.selectorLabels" . | nindent 6 }}
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
-  selector:
-    matchLabels:
-      {{- include "image-registry-metrics-exporter.selectorLabels" . | nindent 6 }}
+  {{- if .Values.updateStrategy }}
+  strategy: {{- .Values.updateStrategy | toYaml | nindent 4}}
+  {{- end }}
   template:
     metadata:
+      labels: {{- include "image-registry-metrics-exporter.selectorLabels" . | nindent 8 }}
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
-      {{- with .Values.podAnnotations }}
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      labels:
-        {{- include "image-registry-metrics-exporter.selectorLabels" . | nindent 8 }}
+        {{- if .Values.podAnnotations }}
+          {{- .Values.podAnnotations | toYaml | nindent 8 }}
+          {{- end }}
+          checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
     spec:
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
+      imagePullSecrets: {{- concat .Values.global.imagePullSecrets .Values.image.pullSecrets | toYaml | nindent 8 }}
+      serviceAccountName: {{ include "image-registry-metrics-exporter.serviceAccountName" . }}
+      automountServiceAccountToken: false
+      {{- if .Values.schedulerName }}
+      schedulerName: {{ .Values.schedulerName }}
       {{- end }}
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      priorityClassName: {{ .Values.priorityClassName }}
+      {{- if .Values.affinity }}
+      affinity: {{- .Values.affinity | toYaml | nindent 8 }}
+      {{- end }}
+      securityContext: {{- .Values.podSecurityContext | toYaml | nindent 8 }}
+      {{- if .Values.nodeSelector }}
+      nodeSelector: {{ .Values.nodeSelector | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if .Values.tolerations }}
+      tolerations: {{ .Values.tolerations | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if .Values.topologySpreadConstraints }}
+      tolerations: {{ .Values.topologySpreadConstraints | toYaml | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: {{ include "image-registry-metrics-exporter.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+          securityContext: {{- .Values.containerSecurityContext | toYaml | nindent 12 }}
           env:
-          - name: IRME_CONF_FILE_PATH
-            value: "/src"
-          - name: GOOGLE_APPLICATION_CREDENTIALS
-            value: "/secret/credentials"
+            - name: IRME_CONF_FILE_PATH
+              value: "/src"
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/secret/credentials"
+            - name: WEB_LISTEN_ADDRESS
+              value: :{{ .Values.containerPorts.http }}
+            - name: TELEMETRY_LISTEN_ADDRESS
+              value: :{{ .Values.containerPorts.metrics }}
+            - name: LOG_LEVEL
+              value: {{ .Values.irme.logLevel }}
           ports:
             - name: http
-              containerPort: 8080
+              containerPort: {{ .Values.containerPorts.http }}
               protocol: TCP
+            - name: metrics
+              containerPort: {{ .Values.containerPorts.metrics }}
+              protocol: TCP
+          volumeMounts:
+            - name: config
+              mountPath: /src/config.yaml
+              subPath: config.yaml
+            - name: google-creds
+              mountPath: /secret/credentials
+              subPath: credentials
           livenessProbe:
-            httpGet:
+            httpGet: &httpProbe
               path: /health
               port: http
+            periodSeconds: 20
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
           readinessProbe:
-            httpGet:
-              path: /readiness
-              port: http
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-          volumeMounts:
-          - name: config
-            mountPath: /src/config.yaml
-            subPath: config.yaml
-          - name: google-creds
-            mountPath: /secret/credentials
-            subPath: credentials
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+            httpGet: *httpProbe
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          resources: {{- .Values.resources | toYaml | nindent 12 }}
       volumes:
-      - name: config
-        configMap:
-          name: {{ .Release.Name }}-configmap
-          items:
-          - key: config.yaml
-            path: config.yaml
-      - name: google-creds
-        secret:
-          secretName: {{ .Values.credentials.secret.name }}
-          items:
-          - key: {{ .Values.credentials.secret.key }}
-            path: credentials
+        - name: config
+          configMap:
+            name: {{ .Release.Name }}-configmap
+            items:
+              - key: config.yaml
+                path: config.yaml
+        - name: google-creds
+          secret:
+            secretName: {{ .Values.irme.credentials.fromSecret.name | default (printf "%s-secret-token" (include "image-registry-metrics-exporter.fullname" . )) }}
+            items:
+              - key: {{ .Values.irme.credentials.fromSecret.key | default "token" }}
+                path: credentials
+      {{- if .Values.extraPodSpec }}
+      {{ .Values.extraPodSpec | toYaml | nindent 6 }}
+      {{- end }}
