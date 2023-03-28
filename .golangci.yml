@@ -10,7 +10,7 @@ linters-settings:
     lang-version: "1.17"
     # Module path which contains the source code being formatted.
     # Default: ""
-    module-path: image-registry-metrics
+    module-path: image-registry-metrics-exporter
 linters:
   enable-all: true
   disable:
