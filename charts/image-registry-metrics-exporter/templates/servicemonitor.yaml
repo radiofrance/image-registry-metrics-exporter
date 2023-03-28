@@ -23,8 +23,5 @@ spec:
     path: {{ .Values.service.metricsPort.path }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ template "image-registry-metrics-exporter.name" . }}
-      app.kubernetes.io/instance: "{{ .Release.Name }}"
-  namespaceSelector:
-    any: true
-{{- end }}
+      {{- include "image-registry-metrics-exporter.selectorLabels" . | nindent 6 }}
+  {{- end }}

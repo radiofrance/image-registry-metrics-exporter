@@ -1,3 +1,4 @@
+---
 replicaCount: 1
 
 image:
@@ -17,30 +18,30 @@ serviceMonitor:
   labels: {}
 
 podSecurityContext:
-   fsGroup: 2000
+  fsGroup: 2000
 
 securityContext:
-   capabilities:
-     drop:
-     - ALL
-   readOnlyRootFilesystem: true
-   runAsNonRoot: true
-   runAsUser: 1000
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
 
 service:
   type: ClusterIP
   metricsPort:
-   name: http
-   path: /metrics
+    name: http
+    path: /metrics
   port: 80
 
 resources:
-   limits:
-     cpu: 100m
-     memory: 256Mi
-   requests:
-     cpu: 100m
-     memory: 256Mi
+  limits:
+    cpu: 100m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
 
 autoscaling:
   enabled: false

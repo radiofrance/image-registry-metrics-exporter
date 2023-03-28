@@ -8,9 +8,6 @@ builds:
     goos:
       - linux
       - darwin
-    goarch:
-      - arm64
-      - amd64
 changelog:
   sort: asc
   filters:
