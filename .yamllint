@@ -3,6 +3,7 @@ extends: default
 
 ignore: |
   charts/image-registry-metrics-exporter/templates/
+  pkg/conf/tests
 
 rules:
   comments:
