@@ -33,11 +33,11 @@ irme:
   credentials:
     ## irme.credentials.value - Image Registry Metrics exporter generate secret with google credentials
     value: "REPLACE-ME"
-    ## irme.credentials.fromSecret - Image Registry exporter use credentials from an existing secret
+    ## irme.credentials.fromSecret - Image Registry Metrics exporter use credentials from an existing secret
     fromSecret:
-      ## irme.credentials.fromSecret.name - Image Registry exporter google credentials secret name
+      ## irme.credentials.fromSecret.name - Image Registry Metrics exporter google credentials secret name
       name: {}
-      ## irme.credentials.fromSecret - Image Registry exporter google credentials secret key
+      ## irme.credentials.fromSecret - Image Registry Metrics exporter google credentials secret key
       key: {}
   ## irme.configuration - Image Registry Metrics configuration. see README.MD for more information.
   configuration: |-
