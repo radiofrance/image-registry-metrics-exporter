@@ -17,6 +17,9 @@ import (
 // Scrape work with []conf.Registry to scrape image tags metadata from OCI Registry.
 // Then add to chan metrics.Job image tags to generate metrics on.
 func Scrape(registries []conf.Registry, tags chan<- metrics.Job) error {
+	if len(registries) == 0 {
+		logrus.Warn("No registries have been set. Please provide registries in configuration file.")
+	}
 	for _, reg := range registries {
 		filteredImageList, err := GetFilteredImagesList(reg)
 		if err != nil {

@@ -91,6 +91,9 @@ func Load(path string) (Config, error) {
 	if err := vip.UnmarshalKey("cron", &cron); err != nil {
 		return Config{}, errors.New("failed to unmarshal configuration file: " + err.Error())
 	}
+	if len(cron) == 0 {
+		return Config{}, errors.New("Cron time must be set in configuration file")
+	}
 
 	log.Info("Loaded configuration from ", vip.ConfigFileUsed())
 	config := Config{Registries: registries, Cron: cron}

@@ -39,6 +39,10 @@ irme:
       name: {}
       ## irme.credentials.fromSecret - Image Registry exporter google credentials secret key
       key: {}
+  ## irme.configuration - Image Registry Metrics configuration. see README.MD for more information.
+  configuration: |-
+    registries: {}
+    cron: "0 * * * *"
 
 ## image -- Image Registry Metrics exporter image
 image:
