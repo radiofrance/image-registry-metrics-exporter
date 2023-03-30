@@ -4,4 +4,4 @@ metadata:
   name: {{ .Release.Name }}-configmap
   namespace: {{ .Release.Namespace }}
 data:
-  config.yaml: {{- .Values.configuration | toYaml | indent 1 }}
+  config.yaml: {{- .Values.irme.configuration | toYaml | indent 1 }}

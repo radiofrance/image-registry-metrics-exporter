@@ -11,6 +11,8 @@ import (
 	"syscall"
 	"time"
 
+	_ "time/tzdata"
+
 	"github.com/radiofrance/image-registry-metrics-exporter/pkg/conf"
 	"github.com/radiofrance/image-registry-metrics-exporter/pkg/controllers"
 	"github.com/radiofrance/image-registry-metrics-exporter/pkg/metrics"

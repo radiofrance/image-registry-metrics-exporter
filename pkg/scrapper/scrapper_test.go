@@ -2,6 +2,7 @@ package scrapper_test
 
 import (
 	"regexp"
+	"sync"
 	"testing"
 	"time"
 
@@ -169,19 +170,23 @@ func TestRegistry_Scrape(t *testing.T) {
 			var registries []conf.Registry
 			registries = append(registries, data.registry)
 			images := make(chan metrics.Job)
-			go func() {
+			wgCatalog := &sync.WaitGroup{}
+			wgCatalog.Add(1)
+			go func(*sync.WaitGroup) {
+				defer wgCatalog.Done()
 				for image := range images {
 					if _, ok := catalog[image.ImageName]; !ok {
 						catalog[image.ImageName] = make(map[string]metrics.TagMetadata)
 					}
 					catalog[image.ImageName][image.TagName] = image.Metadata
 				}
-			}()
+			}(wgCatalog)
 			if err := scrapper.Scrape(registries, images); err != nil {
 				assert.Regexp(t, regexp.MustCompile(data.expectedError), err)
 				return
 			}
 			close(images)
+			wgCatalog.Wait()
 			time.Sleep(1 * time.Second)
 			assert.Equal(t, data.expectedResult, catalog)
 		})

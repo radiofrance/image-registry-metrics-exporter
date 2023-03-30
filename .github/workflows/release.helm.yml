@@ -1,0 +1,27 @@
+---
+name: Release (Helm)
+on: # yamllint disable-line rule:truthy
+  push:
+    branches: [main]
+
+jobs:
+  release:
+    name: Release Helm chart
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0
+        with:
+          fetch-depth: 0
+      - uses: azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # tag=v3.5
+        with:
+          version: v3.10.0
+
+      - name: Configure git user
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+      - uses: helm/chart-releaser-action@be16258da8010256c6e82849661221415f031968 # v1.5.0
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

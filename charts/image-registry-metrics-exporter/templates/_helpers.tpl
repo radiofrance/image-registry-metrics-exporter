@@ -31,6 +31,15 @@ Create chart name and version as used by the chart label.
 {{- end }}
 
 {{/*
+Common annotations
+*/}}
+{{- define "image-registry-metrics-exporter.annotations" -}}
+{{- if .Values.commonAnnotations -}}
+{{ .Values.commonAnnotations | toYaml }}
+{{- end }}
+{{- end }}
+
+{{/*
 Common labels
 */}}
 {{- define "image-registry-metrics-exporter.labels" -}}
@@ -40,6 +49,9 @@ helm.sh/chart: {{ include "image-registry-metrics-exporter.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- if .Values.commonLabels }}
+{{ .Values.commonLabels | toYaml }}
+{{- end }}
 {{- end }}
 
 {{/*
@@ -48,7 +60,31 @@ Selector labels
 {{- define "image-registry-metrics-exporter.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "image-registry-metrics-exporter.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- if .Values.podLabels }}
+{{ .Values.podLabels | toYaml }}
 {{- end }}
+{{- end }}
+
+{{/*
+Return the proper image name
+ref: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_images.tpl
+*/}}
+{{- define "image-registry-metrics-exporter.image" -}}
+{{- $registryName := .Values.image.registry -}}
+{{- $repositoryName := .Values.image.repository -}}
+{{- $separator := ":" -}}
+{{- $termination := .Values.image.tag | default .Chart.AppVersion | toString -}}
+{{- if .Values.global }}
+    {{- if .Values.global.imageRegistry }}
+     {{- $registryName = .Values.global.imageRegistry -}}
+    {{- end -}}
+{{- end -}}
+{{- if .Values.image.digest }}
+    {{- $separator = "@" -}}
+    {{- $termination = .Values.image.digest | toString -}}
+{{- end -}}
+{{- printf "%s/%s%s%s" $registryName $repositoryName $separator $termination -}}
+{{- end -}}
 
 {{/*
 Create the name of the service account to use
@@ -60,3 +96,4 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+

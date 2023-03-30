@@ -1,0 +1,15 @@
+---
+extends: default
+
+ignore: |
+  charts/image-registry-metrics-exporter/templates/
+  pkg/conf/tests
+
+rules:
+  comments:
+    require-starting-space: true
+    ignore-shebangs: true
+    min-spaces-from-content: 1
+  line-length:
+    max: 160
+    allow-non-breakable-words: true
