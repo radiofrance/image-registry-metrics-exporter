@@ -6,9 +6,12 @@ COPY . .
 
 RUN CGO_ENABLED=0 go build -ldflags="-w -s -X 'main.version=${VERSION}'" ./cmd/image-registry-metrics-exporter
 
-FROM scratch
+FROM docker.io/alpine:3.18.0
 
 COPY --from=builder /build/image-registry-metrics-exporter /image-registry-metrics-exporter
+
+RUN apk update && apk add --no-cache ca-certificates=20230506-r0 \
+    && update-ca-certificates
 
 EXPOSE 9252
 USER 65534
