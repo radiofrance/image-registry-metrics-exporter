@@ -12,7 +12,7 @@ ARG CA_CERTIFICATES_VERSION=20230506-r0
 
 COPY --from=builder /build/image-registry-metrics-exporter /image-registry-metrics-exporter
 
-RUN apk update && apk add --no-cache ca-certificates=${CA_CERTIFICATES_VERSION}
+RUN apk add --no-cache ca-certificates=${CA_CERTIFICATES_VERSION}
 
 EXPOSE 9252
 USER 65534
