@@ -14,7 +14,7 @@ COPY --from=builder /build/image-registry-metrics-exporter /image-registry-metri
 
 RUN apk add --no-cache ca-certificates=${CA_CERTIFICATES_VERSION}
 
-EXPOSE 9252
+EXPOSE 8080 9252
 USER 65534
 
 ENTRYPOINT ["/image-registry-metrics-exporter"]

@@ -44,7 +44,9 @@ func main() {
 	}
 	tags.GenerateMetricsOn()
 
-	bindAddr := flag.String("bind-address", ":8080", "address:port to bind /metrics endpoint to")
+	bindAddrHealth := flag.String("bind-address-health", ":8080", "address:port to bind status endpoints to")
+	bindAddrMetrics := flag.String("bind-address-metrics", ":9252", "address:port to bind /metrics endpoint to")
+
 	flag.Parse()
 
 	// Activating routes for HTTP server
@@ -52,21 +54,32 @@ func main() {
 	router.Use(
 		mux.CORSMethodMiddleware(router), // Handle CORS requests
 	)
-
 	router.HandleFunc("/health", controllers.HealthCheck)
 	router.HandleFunc("/readiness", controllers.Ready)
-	router.Handle("/metrics", metrics.Handler())
+
+	// Activating routes for Metrics server
+	routerMetrics := mux.NewRouter().StrictSlash(true)
+	routerMetrics.Use(
+		mux.CORSMethodMiddleware(routerMetrics), // Handle CORS requests
+	)
+	routerMetrics.Handle("/metrics", metrics.Handler())
 
 	timeoutDuration := 30 * time.Second
 	metricsSrv := &http.Server{
-		Addr:         *bindAddr,
+		Addr:         *bindAddrMetrics,
+		Handler:      http.TimeoutHandler(routerMetrics, timeoutDuration, "Server Timeout"),
+		ReadTimeout:  timeoutDuration,
+		WriteTimeout: timeoutDuration,
+	}
+	healthSrv := &http.Server{
+		Addr:         *bindAddrHealth,
 		Handler:      http.TimeoutHandler(router, timeoutDuration, "Server Timeout"),
 		ReadTimeout:  timeoutDuration,
 		WriteTimeout: timeoutDuration,
 	}
 
 	var waitGroup sync.WaitGroup
-	waitGroup.Add(1)
+	waitGroup.Add(2)
 
 	go func() {
 		defer waitGroup.Done()
@@ -75,6 +88,16 @@ func main() {
 				log.Info("Metrics server closed")
 			} else {
 				log.Fatalf("Failed to start metrics server %v", err)
+			}
+		}
+	}()
+	go func() {
+		defer waitGroup.Done()
+		if err := healthSrv.ListenAndServe(); err != nil {
+			if errors.Is(err, http.ErrServerClosed) {
+				log.Info("Http server closed")
+			} else {
+				log.Fatalf("Failed to start http server %v", err)
 			}
 		}
 	}()
@@ -109,6 +132,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
 	defer cancel()
 	_ = metricsSrv.Shutdown(ctx)
+	_ = healthSrv.Shutdown(ctx)
 	waitGroup.Wait()
 	log.Info("Shutting down")
 }
