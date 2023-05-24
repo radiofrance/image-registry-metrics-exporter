@@ -54,10 +54,6 @@ spec:
               value: "/src"
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: "/secret/credentials"
-            - name: WEB_LISTEN_ADDRESS
-              value: :{{ .Values.containerPorts.http }}
-            - name: TELEMETRY_LISTEN_ADDRESS
-              value: :{{ .Values.containerPorts.metrics }}
             - name: LOG_LEVEL
               value: {{ .Values.irme.logLevel }}
           ports:
