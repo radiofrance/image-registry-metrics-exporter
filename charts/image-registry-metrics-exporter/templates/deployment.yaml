@@ -42,7 +42,7 @@ spec:
       tolerations: {{ .Values.tolerations | toYaml | nindent 8 }}
       {{- end }}
       {{- if .Values.topologySpreadConstraints }}
-      tolerations: {{ .Values.topologySpreadConstraints | toYaml | nindent 8 }}
+      topologySpreadConstraints: {{ .Values.topologySpreadConstraints | toYaml | nindent 8 }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
