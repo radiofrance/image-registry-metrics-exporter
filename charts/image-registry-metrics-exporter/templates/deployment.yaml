@@ -42,7 +42,7 @@ spec:
       tolerations: {{ .Values.tolerations | toYaml | nindent 8 }}
       {{- end }}
       {{- if .Values.topologySpreadConstraints }}
-      tolerations: {{ .Values.topologySpreadConstraints | toYaml | nindent 8 }}
+      topologySpreadConstraints: {{ .Values.topologySpreadConstraints | toYaml | nindent 8 }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -54,10 +54,6 @@ spec:
               value: "/src"
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: "/secret/credentials"
-            - name: WEB_LISTEN_ADDRESS
-              value: :{{ .Values.containerPorts.http }}
-            - name: TELEMETRY_LISTEN_ADDRESS
-              value: :{{ .Values.containerPorts.metrics }}
             - name: LOG_LEVEL
               value: {{ .Values.irme.logLevel }}
           ports:

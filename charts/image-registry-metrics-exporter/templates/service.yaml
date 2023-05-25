@@ -8,9 +8,13 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}80
+    - port: {{ .Values.service.ports.http }}
       targetPort: http
       protocol: TCP
       name: http
+    - port: {{ .Values.service.ports.metrics }}
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
   selector:
     {{- include "image-registry-metrics-exporter.selectorLabels" . | nindent 4 }}

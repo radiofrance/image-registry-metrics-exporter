@@ -138,8 +138,9 @@ containerSecurityContext:
 
 ## containerPorts -- Image Registry Metrics exporter container port
 containerPorts:
-  ## containerPorts.http -- Main exporter port, that receive webhook requests and export metrics
+  ## containerPorts.http -- Status exporter port, that expose health and readiness
   http: 8080
+  ## containerPorts.http -- Main exporter port, that expose metrics
   metrics: 9252
 
 ## resources -- Image Registry Metrics exporter pods' resource requests and limits
@@ -197,41 +198,10 @@ service:
   ## service.type -- Image Registry Metrics exporter Service type
   type: ClusterIP
   ports:
-    ## service.ports.http -- HTTP port for incoming webhooks
+    ## service.ports.http -- HTTP port for status
     http: 8080
     ## service.ports.metrics -- Metrics port to be scraped by prometheus
     metrics: 9252
-  nodePorts:
-    ## service.nodePorts.http -- node port for HTTP
-    http: ""
-    ## service.nodePorts.http -- node port for metrics
-    metrics: ""
-  ## service.clusterIP -- Image Registry Metrics exporter service Cluster IP
-  ## e.g.:
-  ## clusterIP: None
-  clusterIP: ""
-  ## service.loadBalancerSourceRanges -- Image Registry Metrics exporter service Load Balancer sources
-  ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
-  ## e.g:
-  ## loadBalancerSourceRanges:
-  ##   - 10.10.10.0/24
-  loadBalancerSourceRanges: []
-  ## service.annotations -- additional custom annotations for Image Registry Metrics exporter service
-  ## This can be used to set the LoadBalancer service type to internal only.
-  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer
-  annotations: {}
-  ## service.externalTrafficPolicy -- Image Registry Metrics exporter service external traffic policy
-  ## ref https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
-  externalTrafficPolicy: Cluster
-  ## service.sessionAffinity -- session Affinity for Kubernetes service, can be "None" or "ClientIP"
-  ## If "ClientIP", consecutive client requests will be directed to the same pod
-  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies
-  sessionAffinity: None
-  ## service.sessionAffinityConfig -- additional settings for the sessionAffinity
-  ## sessionAffinityConfig:
-  ##   clientIP:
-  ##     timeoutSeconds: 300
-  sessionAffinityConfig: {}
 
 ## metrics -- metrics parameters
 metrics:
