@@ -5,6 +5,7 @@ linters:
   enable-all: true
   disable:
     - cyclop            # calculates cyclomatic complexities of functions or packages => legit, but we prefer to use sonarqube and be non-blocking
+    - depguard          # We do not have particular restrictions on which packages should be allowed or not
     - exhaustruct       # Find structs that have uninitialized fields. => We want to rely on default field initialization
     - forcetypeassert   # We manipulate a lot of slack api data that always need cast
     - funlen            # checks for long functions => legit, but we prefer to use sonarqube and be non-blocking
