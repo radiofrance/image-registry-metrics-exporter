@@ -13,8 +13,8 @@ jobs:
     name: Checkov
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0
-      - uses: actions/setup-python@d27e3f3d7c64b4bbf8e4abfb9b63b83e846e0435 # v4.5.0
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+      - uses: actions/setup-python@bd6b4b6205c4dbad673328db7b31b7fab9e241c0 # v4.6.1
         with:
           python-version: '3.8'
           check-latest: true
@@ -24,7 +24,7 @@ jobs:
           directory: charts/image-registry-metrics-exporter
           framework: helm
           skip_check: CKV_K8S_11,CKV_K8S_15,CKV_K8S_21,CKV_K8S_35,CKV_K8S_43
-      - uses: github/codeql-action/upload-sarif@a589d4087ea22a0a48fc153d1b461886e262e0f2 # tag=codeql-bundle-20221211
+      - uses: github/codeql-action/upload-sarif@cdcdbb579706841c47f7063dda365e292e5cad7a # tag=codeql-bundle-20221211
         if: always()
         with:
           category: checkov-helm

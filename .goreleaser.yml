@@ -2,12 +2,15 @@ before:
   hooks:
     - go mod tidy
 builds:
-  - main: ./cmd
+  - main: ./cmd/image-registry-metrics-exporter
     env:
       - CGO_ENABLED=0
     goos:
       - linux
       - darwin
+    goarch:
+      - arm64
+      - amd64
 changelog:
   sort: asc
   filters:

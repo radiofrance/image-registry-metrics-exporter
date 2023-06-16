@@ -15,21 +15,17 @@ jobs:
     name: Chart testing
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@24cb9080177205b6e8c946b17badbe402adc938f # v3.4.0
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
         with:
           fetch-depth: 0
       - uses: azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # tag=v3.5
-      - uses: actions/setup-python@d27e3f3d7c64b4bbf8e4abfb9b63b83e846e0435 # v4.5.0
+      - uses: actions/setup-python@bd6b4b6205c4dbad673328db7b31b7fab9e241c0 # v4.6.1
         with:
           python-version: '3.9'
           check-latest: true
-      - uses: helm/chart-testing-action@afea100a513515fbd68b0e72a7bb0ae34cb62aec # tag=v2.3.1
-      - uses: helm/kind-action@d8ccf8fb623ce1bb360ae2f45f323d9d5c5e9f00 # tag=v1.5.0
+      - uses: helm/chart-testing-action@e8788873172cb653a90ca2e819d79d65a66d4e76 # v2.4.0
+      - uses: helm/kind-action@fa81e57adff234b2908110485695db0f181f3c67 # v1.7.0
 
-      - name: Build required image
-        run: make image-ci
-      - name: Load image into kind
-        run: kind load docker-image --name "chart-testing" "ghcr.io/radiofrance/image-registry-metrics-exporter:ci"
       - name: Run chart-testing (install)
         if: github.event_name == 'pull_request'
         run: ct install --target-branch ${{ github.event.pull_request.base.ref }} --helm-extra-set-args '--set=image.tag=ci'
