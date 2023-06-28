@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/aptible/supercronic v0.2.25
-	github.com/go-co-op/gocron v1.19.0
+	github.com/go-co-op/gocron v1.30.0
 	github.com/google/go-containerregistry v0.14.0
 	github.com/gorilla/mux v1.8.0
 	github.com/pkg/errors v0.9.1
@@ -50,6 +50,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
 	github.com/vbatts/tar-split v0.11.2 // indirect
+	go.uber.org/atomic v1.9.0 // indirect
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/oauth2 v0.7.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
