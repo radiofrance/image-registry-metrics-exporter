@@ -53,6 +53,8 @@ github.com/andres-erbsen/clock v0.0.0-20160526145045-9e14626cd129 h1:MzBOUgng9or
 github.com/andres-erbsen/clock v0.0.0-20160526145045-9e14626cd129/go.mod h1:rFgpPQZYZ8vdbc+48xibu8ALc3yeyd64IhHS+PU6Yyg=
 github.com/aptible/supercronic v0.2.2 h1:Ltj+WIRpLB7ld+1BbSS+ehNl4doEVF2KtK9Ua/yPi1M=
 github.com/aptible/supercronic v0.2.2/go.mod h1:R+BgJGSSHmepwQBEtSMS/1GZXJDIE1TV6xz5bhY5tKY=
+github.com/aptible/supercronic v0.2.25 h1:l3wJzLNicivvumVPWEM5/B75o1Pi9e5KMtrZR9m6rv4=
+github.com/aptible/supercronic v0.2.25/go.mod h1:mrrR6YgUiOvR8zPyLl8zPcHcHmuNN5kht7W7pD/gVrQ=
 github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973/go.mod h1:Dwedo/Wpr24TaqPxmxbtue+5NUziq4I4S80YR8gNf3Q=
 github.com/beorn7/perks v1.0.0/go.mod h1:KWe93zE9D1o94FZ5RNwFwVgaQK1VOXiVxmqh+CedLV8=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
