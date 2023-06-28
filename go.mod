@@ -3,7 +3,7 @@ module github.com/radiofrance/image-registry-metrics-exporter
 go 1.20
 
 require (
-	github.com/aptible/supercronic v0.2.2
+	github.com/aptible/supercronic v0.2.25
 	github.com/go-co-op/gocron v1.19.0
 	github.com/google/go-containerregistry v0.14.0
 	github.com/gorilla/mux v1.8.0
