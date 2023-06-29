@@ -30,7 +30,7 @@ func TestGoogleProvider_ImagesCatalog(t *testing.T) {
 			title:           "test with fake crane",
 			activateBackend: true,
 			expectedErr:     nil,
-			expectedResult:  []string(nil),
+			expectedResult:  []string{},
 		},
 		{
 			title:           "no backend",
