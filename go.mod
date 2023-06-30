@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/aptible/supercronic v0.2.25
-	github.com/go-co-op/gocron v1.30.0
+	github.com/go-co-op/gocron v1.30.1
 	github.com/google/go-containerregistry v0.15.2
 	github.com/gorilla/mux v1.8.0
 	github.com/pkg/errors v0.9.1
