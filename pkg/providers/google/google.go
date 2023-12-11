@@ -2,15 +2,13 @@ package google
 
 import (
 	"fmt"
-
-	"github.com/radiofrance/image-registry-metrics-exporter/pkg/metrics"
-
-	log "github.com/sirupsen/logrus"
+	"log/slog"
 
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/crane"
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/google/go-containerregistry/pkg/v1/google"
+	"github.com/radiofrance/image-registry-metrics-exporter/pkg/metrics"
 )
 
 // gcr implements conf.Provider interface
@@ -22,7 +20,7 @@ type gcr struct {
 func New() *gcr {
 	auth, err := google.NewEnvAuthenticator()
 	if err != nil {
-		log.Info(err)
+		slog.Info(err.Error())
 	}
 	return &gcr{
 		Auth: auth,

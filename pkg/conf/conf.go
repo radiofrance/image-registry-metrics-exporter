@@ -1,6 +1,8 @@
 package conf
 
 import (
+	"fmt"
+	"log/slog"
 	"regexp"
 
 	"github.com/radiofrance/image-registry-metrics-exporter/pkg/metrics"
@@ -8,7 +10,6 @@ import (
 	"github.com/radiofrance/image-registry-metrics-exporter/pkg/providers/google"
 
 	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
 
@@ -43,9 +44,9 @@ type Registry struct {
 // Provider works as a interface to OCI compatible registry backend.
 type Provider interface {
 	// GetImagesList that give a list of images ;
-	GetImagesList(string) ([]string, error)
+	GetImagesList(url string) ([]string, error)
 	// ListImageTag that give a map of tags with provider.metrics.TagMetadata on each of it.
-	ListImageTag(string) (map[string]metrics.TagMetadata, error)
+	ListImageTag(image string) (map[string]metrics.TagMetadata, error)
 }
 
 // Load a file with which contains a struct that can be unmarshal to a Config.
@@ -72,7 +73,7 @@ func Load(path string) (Config, error) {
 		for _, filter := range registries[reg].ImagesFilters {
 			r, err := regexp.Compile(filter)
 			if err != nil {
-				log.Warnf("image filter : %s is not a regex", filter)
+				slog.Warn(fmt.Sprintf("image filter : %s is not a regex", filter))
 			} else {
 				registries[reg].ImagesRegex = append(registries[reg].ImagesRegex, r)
 			}
@@ -80,7 +81,7 @@ func Load(path string) (Config, error) {
 		for _, filter := range registries[reg].TagsFilters {
 			r, err := regexp.Compile(filter)
 			if err != nil {
-				log.Warnf("tag filter : %s is not a regex", filter)
+				slog.Warn(fmt.Sprintf("tag filter : %s is not a regex", filter))
 			} else {
 				registries[reg].TagsRegex = append(registries[reg].TagsRegex, r)
 			}
@@ -95,7 +96,7 @@ func Load(path string) (Config, error) {
 		return Config{}, errors.New("Cron time must be set in configuration file")
 	}
 
-	log.Info("Loaded configuration from ", vip.ConfigFileUsed())
+	slog.Info(fmt.Sprintf("Loaded configuration from %s", vip.ConfigFileUsed()))
 	config := Config{Registries: registries, Cron: cron}
 
 	return config, nil

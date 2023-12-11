@@ -15,6 +15,7 @@ import (
 
 	"github.com/google/go-containerregistry/pkg/registry"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGoogleProvider_ImagesCatalog(t *testing.T) {
@@ -57,7 +58,7 @@ func TestGoogleProvider_ImagesCatalog(t *testing.T) {
 			list, err := gProv.GetImagesList(repo)
 			assert.Equal(t, data.expectedResult, list)
 			if data.expectedErr == nil {
-				assert.Equal(t, nil, err)
+				require.NoError(t, err)
 				return
 			}
 			assert.Regexp(t, regexp.MustCompile(data.expectedErr.Error()), err)

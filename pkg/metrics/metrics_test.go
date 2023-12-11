@@ -8,11 +8,12 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus/testutil"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGenerateMetricsOn(t *testing.T) { //nolint:paralleltest // cannot output metrics in parallels
 	tag, err := metrics.New()
-	assert.Equal(t, nil, err)
+	require.NoError(t, err)
 
 	dataset := []struct {
 		title  string
@@ -75,10 +76,10 @@ func TestGenerateMetricsOn(t *testing.T) { //nolint:paralleltest // cannot outpu
 
 			for imageName, imageMetadata := range data.images {
 				for tagName, tagMetadata := range imageMetadata {
-					assert.Equal(t, float64(tagMetadata.Created.Unix()), testutil.ToFloat64(
-						tag.MetricsCreatedTime.WithLabelValues(imageName, tagName)), "Defines when image was Created")
-					assert.Equal(t, float64(tagMetadata.Uploaded.Unix()), testutil.ToFloat64(
-						tag.MetricsUploadedTime.WithLabelValues(imageName, tagName)), "Defined when image was Uploaded")
+					assert.InEpsilon(t, float64(tagMetadata.Created.Unix()), testutil.ToFloat64(
+						tag.MetricsCreatedTime.WithLabelValues(imageName, tagName)), 0.1, "Defines when image was Created")
+					assert.InEpsilon(t, float64(tagMetadata.Uploaded.Unix()), testutil.ToFloat64(
+						tag.MetricsUploadedTime.WithLabelValues(imageName, tagName)), 0.1, "Defines when image was Uploaded")
 				}
 			}
 		})

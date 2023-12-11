@@ -2,12 +2,12 @@ package metrics
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	log "github.com/sirupsen/logrus"
 )
 
 // metricsExporterConf is a struct which contains config to generate metrics on an images tags set.
@@ -55,7 +55,7 @@ func New() (*metricsExporterConf, error) {
 
 func (tag *metricsExporterConf) worker() {
 	for data := range tag.Queue {
-		log.Infof("updating metrics for %s:%s", data.ImageName, data.TagName)
+		slog.Info(fmt.Sprintf("updating metrics for %s:%s", data.ImageName, data.TagName))
 		tag.MetricsUploadedTime.
 			With(prometheus.Labels{"image": data.ImageName, "tag": data.TagName}).
 			Set(float64(data.Metadata.Uploaded.Unix()))
