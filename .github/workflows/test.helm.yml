@@ -31,4 +31,4 @@ jobs:
         run: ct install --target-branch ${{ github.event.pull_request.base.ref }} --helm-extra-set-args '--set=image.tag=ci'
       - name: Run chart-testing (install)
         if: github.event_name == 'push'
-        run: ct install --all --helm-extra-args '--set "image.tag=ci"'
+        run: ct install --all --helm-extra-set-args '--set=image.tag=ci'
