@@ -24,7 +24,7 @@ jobs:
           directory: charts/image-registry-metrics-exporter
           framework: helm
           skip_check: CKV_K8S_11,CKV_K8S_15,CKV_K8S_21,CKV_K8S_35,CKV_K8S_43
-      - uses: github/codeql-action/upload-sarif@cdcdbb579706841c47f7063dda365e292e5cad7a # tag=codeql-bundle-20221211
+      - uses: github/codeql-action/upload-sarif@fe23b5a3e1de4ae7f64965059233ee74e959035e # tag=codeql-bundle-20221211
         if: always()
         with:
           category: checkov-helm
