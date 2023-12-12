@@ -21,7 +21,7 @@ import (
 	"github.com/radiofrance/image-registry-metrics-exporter/pkg/scrapper"
 
 	"github.com/aptible/supercronic/cronexpr"
-	"github.com/go-co-op/gocron"
+	"github.com/go-co-op/gocron/v2"
 	"github.com/gorilla/mux"
 )
 
@@ -39,8 +39,8 @@ func init() {
 func main() {
 	config, err := conf.Load(os.Getenv("IRME_CONF_FILE_PATH"))
 	if err != nil {
-		slog.Error(err.Error())
-		return
+		slog.Error(fmt.Sprintf("failed to load config file: %v", err))
+		os.Exit(1)
 	}
 
 	tags, err := metrics.New()
@@ -84,6 +84,43 @@ func main() {
 		WriteTimeout: timeoutDuration,
 	}
 
+	location, err := time.LoadLocation("Europe/Paris")
+	if err != nil {
+		slog.Error(fmt.Sprintf("failed to load location: %v", err))
+		os.Exit(1)
+	}
+
+	scheduler, err := gocron.NewScheduler(
+		gocron.WithLocation(location),
+		gocron.WithGlobalJobOptions(
+			gocron.WithStartAt(gocron.WithStartImmediately()),
+			gocron.WithSingletonMode(gocron.LimitModeReschedule),
+		),
+	)
+	if err != nil {
+		slog.Error(fmt.Sprintf("failed to create cron scheduler: %v", err))
+		os.Exit(1)
+	}
+	defer func() { _ = scheduler.Shutdown() }()
+
+	if _, err = scheduler.NewJob(
+		gocron.CronJob(config.Cron, false),
+		gocron.NewTask(func() {
+			logger := gocron.NewLogger(gocron.LogLevelInfo)
+			logger.Info("Starting scraping metrics")
+			if err := scrapper.Scrape(config.Registries, tags.Queue); err != nil {
+				logger.Error(fmt.Sprintf("failed to scrape images metadata: %v", err))
+				return
+			}
+			logger.Info(fmt.Sprintf("Getting metrics is done, next schedule at %s",
+				cronexpr.MustParse(config.Cron).Next(time.Now())))
+		}),
+	); err != nil {
+		slog.Error(fmt.Sprintf("failed to run cron job: %v", err))
+		return
+	}
+	scheduler.Start()
+
 	var waitGroup sync.WaitGroup
 	waitGroup.Add(2)
 
@@ -109,29 +146,6 @@ func main() {
 	}()
 	controllers.UpdateHealth(true)
 	controllers.UpdateReady(true)
-
-	location, err := time.LoadLocation("Europe/Paris")
-	if err != nil {
-		slog.Error(fmt.Sprintf("failed to load location: %v", err))
-		os.Exit(1)
-	}
-
-	scheduler := gocron.NewScheduler(location)
-	_, err = scheduler.Cron(config.Cron).StartImmediately().Do(func() {
-		slog.Info("Starting scraping metrics")
-		if err := scrapper.Scrape(config.Registries, tags.Queue); err != nil {
-			slog.Error(fmt.Sprintf("failed to scrape images metadata: %v", err))
-			os.Exit(1)
-		}
-		slog.Info(fmt.Sprintf("Getting metrics is done, next schedule at %s",
-			cronexpr.MustParse(config.Cron).Next(time.Now())))
-	})
-	if err != nil {
-		slog.Error(fmt.Sprintf("failed to run cron job: %v", err))
-		os.Exit(1)
-	}
-	scheduler.SetMaxConcurrentJobs(1, gocron.RescheduleMode)
-	scheduler.StartAsync()
 
 	// Graceful shutdown, inspired by https://github.com/gorilla/mux#graceful-shutdown
 	c := make(chan os.Signal, 1)
