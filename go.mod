@@ -4,7 +4,7 @@ go 1.21.5
 
 require (
 	github.com/aptible/supercronic v0.2.28
-	github.com/go-co-op/gocron v1.36.1
+	github.com/go-co-op/gocron/v2 v2.0.0
 	github.com/google/go-containerregistry v0.17.0
 	github.com/gorilla/mux v1.8.1
 	github.com/pkg/errors v0.9.1
@@ -30,6 +30,7 @@ require (
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/uuid v1.4.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
+	github.com/jonboulle/clockwork v0.4.0 // indirect
 	github.com/klauspost/compress v1.17.4 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/matttproud/golang_protobuf_extensions/v2 v2.0.0 // indirect
