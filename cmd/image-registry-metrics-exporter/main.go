@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"flag"
+	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -21,26 +23,30 @@ import (
 	"github.com/aptible/supercronic/cronexpr"
 	"github.com/go-co-op/gocron"
 	"github.com/gorilla/mux"
-	log "github.com/sirupsen/logrus"
 )
 
 func init() {
 	_, debugMode := os.LookupEnv("DEBUG_MODE")
 	if debugMode {
-		log.SetLevel(log.DebugLevel)
+		handler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+			Level: slog.LevelDebug,
+		})
+		logger := slog.New(handler)
+		slog.SetDefault(logger)
 	}
 }
 
 func main() {
 	config, err := conf.Load(os.Getenv("IRME_CONF_FILE_PATH"))
 	if err != nil {
-		log.Error(err)
+		slog.Error(err.Error())
 		return
 	}
 
 	tags, err := metrics.New()
 	if err != nil {
-		log.Fatalf("failed to generate metrics struct: %s", err)
+		slog.Error(fmt.Sprintf("failed to generate metrics struct: %v", err))
+		os.Exit(1)
 	}
 	tags.GenerateMetricsOn()
 
@@ -85,9 +91,9 @@ func main() {
 		defer waitGroup.Done()
 		if err := metricsSrv.ListenAndServe(); err != nil {
 			if errors.Is(err, http.ErrServerClosed) {
-				log.Info("Metrics server closed")
+				slog.Info("Metrics server closed")
 			} else {
-				log.Fatalf("Failed to start metrics server %v", err)
+				slog.Error(fmt.Sprintf("Failed to start metrics server %v", err))
 			}
 		}
 	}()
@@ -95,9 +101,9 @@ func main() {
 		defer waitGroup.Done()
 		if err := healthSrv.ListenAndServe(); err != nil {
 			if errors.Is(err, http.ErrServerClosed) {
-				log.Info("Http server closed")
+				slog.Info("Http server closed")
 			} else {
-				log.Fatalf("Failed to start http server %v", err)
+				slog.Error(fmt.Sprintf("Failed to start http server %v", err))
 			}
 		}
 	}()
@@ -106,20 +112,23 @@ func main() {
 
 	location, err := time.LoadLocation("Europe/Paris")
 	if err != nil {
-		log.Fatalf("failed to load location: %v", err)
+		slog.Error(fmt.Sprintf("failed to load location: %v", err))
+		os.Exit(1)
 	}
 
 	scheduler := gocron.NewScheduler(location)
 	_, err = scheduler.Cron(config.Cron).StartImmediately().Do(func() {
-		log.Info("Starting scraping metrics")
+		slog.Info("Starting scraping metrics")
 		if err := scrapper.Scrape(config.Registries, tags.Queue); err != nil {
-			log.Fatalf("failed to scrape images metadata: %v", err)
+			slog.Error(fmt.Sprintf("failed to scrape images metadata: %v", err))
+			os.Exit(1)
 		}
-		log.Infof("Getting metrics is done, next schedule at %s",
-			cronexpr.MustParse(config.Cron).Next(time.Now()))
+		slog.Info(fmt.Sprintf("Getting metrics is done, next schedule at %s",
+			cronexpr.MustParse(config.Cron).Next(time.Now())))
 	})
 	if err != nil {
-		log.Fatalf("failed to run cron job: %v", err)
+		slog.Error(fmt.Sprintf("failed to run cron job: %v", err))
+		os.Exit(1)
 	}
 	scheduler.SetMaxConcurrentJobs(1, gocron.RescheduleMode)
 	scheduler.StartAsync()
@@ -134,5 +143,5 @@ func main() {
 	_ = metricsSrv.Shutdown(ctx)
 	_ = healthSrv.Shutdown(ctx)
 	waitGroup.Wait()
-	log.Info("Shutting down")
+	slog.Info("Shutting down")
 }

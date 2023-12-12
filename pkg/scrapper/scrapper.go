@@ -2,6 +2,7 @@ package scrapper
 
 import (
 	"fmt"
+	"log/slog"
 	"regexp"
 	"sync"
 
@@ -10,15 +11,13 @@ import (
 	"github.com/radiofrance/image-registry-metrics-exporter/pkg/metrics"
 
 	"go.uber.org/ratelimit"
-
-	"github.com/sirupsen/logrus"
 )
 
 // Scrape work with []conf.Registry to scrape image tags metadata from OCI Registry.
 // Then add to chan metrics.Job image tags to generate metrics on.
 func Scrape(registries []conf.Registry, tags chan<- metrics.Job) error {
 	if len(registries) == 0 {
-		logrus.Warn("No registries have been set. Please provide registries in configuration file.")
+		slog.Warn("No registries have been set. Please provide registries in configuration file.")
 	}
 	for _, reg := range registries {
 		filteredImageList, err := GetFilteredImagesList(reg)
@@ -109,16 +108,16 @@ func GetImageTags(
 	defer wg.Done()
 
 	for image := range images {
-		logrus.Info("Updating image infos: ", image)
+		slog.Info(fmt.Sprintf("Updating image infos: %s", image))
 		rate.Take()
 
 		extractedTags, err := reg.ProviderObject.ListImageTag(reg.Domain + "/" + image)
 		if err != nil {
-			logrus.Errorf("cannot list tags of %s : %s", reg.Domain+"/"+image, err)
+			slog.Error(fmt.Sprintf("cannot list tags of %s: %v", reg.Domain+"/"+image, err))
 		}
 		filteredTags := filterTagsList(extractedTags, reg.TagsRegex)
 		if err != nil {
-			logrus.Errorf("cannot filter tags of %s : %s", reg.Domain+"/"+image, err)
+			slog.Error(fmt.Sprintf("cannot filter tags of %s: %v", reg.Domain+"/"+image, err))
 		}
 
 		for k, v := range filteredTags {

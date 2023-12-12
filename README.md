@@ -153,5 +153,4 @@ Thanks for these awesome resources and projects that were used during developmen
 
 - <https://github.com/go-co-op/gocron> - A Golang Job Scheduling Package
 - <https://github.com/gorilla/mux> - A powerful HTTP router and URL matcher for building Go web servers with 🦍
-- <https://github.com/sirupsen/logrus> - Structured, pluggable logging for Go.
 - <https://github.com/spf13/viper> - Go configuration with fangs

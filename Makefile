@@ -29,7 +29,7 @@ image-ci: ## Build an image for CI Test Helm
 ## ----------------------
 ##
 
-qa: lint test.unit ## Run all Q.A
+qa: lint test ## Run all Q.A
 
 lint.install: ## Install Go linter
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint
@@ -42,7 +42,7 @@ lint.fix: ## Lint and fix source code
 
 test: ## Run unit tests (go test)
 	@echo "### Running unit tests ..."
-	go test -v ./... -coverprofile coverage.output
+	go test -v ./... -coverprofile coverage.out
 
 ##
 ## ----------------------

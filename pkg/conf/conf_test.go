@@ -7,6 +7,7 @@ import (
 	"github.com/radiofrance/image-registry-metrics-exporter/pkg/conf"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestLoad(t *testing.T) {
@@ -16,7 +17,7 @@ func TestLoad(t *testing.T) {
 
 		config, err := conf.Load("./tests/valid")
 		if err != nil {
-			assert.Equal(t, nil, err)
+			require.NoError(t, err)
 		}
 
 		fake := conf.Registry{
@@ -32,7 +33,7 @@ func TestLoad(t *testing.T) {
 		var registries []conf.Registry
 		conf.AddProvider(&fake)
 		if err != nil {
-			assert.Equal(t, nil, err)
+			require.NoError(t, err)
 		}
 
 		registries = append(registries, fake)
