@@ -10,10 +10,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/go-containerregistry/pkg/registry"
 	"github.com/radiofrance/image-registry-metrics-exporter/pkg/metrics"
 	"github.com/radiofrance/image-registry-metrics-exporter/pkg/providers/google"
-
-	"github.com/google/go-containerregistry/pkg/registry"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -74,43 +73,48 @@ func TestGoogleProvider_ListImageTag(t *testing.T) {
 		responseBody []byte
 		wantErr      bool
 		want         map[string]metrics.TagMetadata
-	}{{
-		name:         "success",
-		responseBody: []byte(`{"tags":["foo","bar"]}`),
-		wantErr:      false,
-		want:         map[string]metrics.TagMetadata{},
-	}, {
-		name: "gcr success",
-		responseBody: []byte(`{"child":["hello", "world"],"manifest":{"digest1":{"imageSizeBytes":"1",
-"mediaType":"mainstream","timeCreatedms":"1","timeUploadedMs":"2","tag":["foo"]},
-"digest2":{"imageSizeBytes":"2","mediaType":"indie","timeCreatedMs":"3",
-"timeUploadedMs":"4","tag":["bar","baz"]}},"tags":["foo","bar","baz"]}`),
-		wantErr: false,
-		want: map[string]metrics.TagMetadata{
-			"bar": {
-				Created:  time.Date(1970, time.January, 1, 0, 0, 0, 3000000, time.Local),
-				Uploaded: time.Date(1970, time.January, 1, 0, 0, 0, 4000000, time.Local),
-			},
-			"baz": {
-				Created:  time.Date(1970, time.January, 1, 0, 0, 0, 3000000, time.Local),
-				Uploaded: time.Date(1970, time.January, 1, 0, 0, 0, 4000000, time.Local),
-			},
-			"foo": {
-				Created:  time.Date(1970, time.January, 1, 0, 0, 0, 1000000, time.Local),
-				Uploaded: time.Date(1970, time.January, 1, 0, 0, 0, 2000000, time.Local),
+	}{
+		{
+			name:         "success",
+			responseBody: []byte(`{"tags":["foo","bar"]}`),
+			wantErr:      false,
+			want:         map[string]metrics.TagMetadata{},
+		},
+		{
+			name: "gcr success",
+			responseBody: []byte(`{"child":["hello", "world"],"manifest":{"digest1":{"imageSizeBytes":"1",
+			"mediaType":"mainstream","timeCreatedms":"1","timeUploadedMs":"2","tag":["foo"]},
+			"digest2":{"imageSizeBytes":"2","mediaType":"indie","timeCreatedMs":"3","timeUploadedMs":"4",
+			"tag":["bar","baz"]}},"tags":["foo","bar","baz"]}`),
+			wantErr: false,
+			want: map[string]metrics.TagMetadata{
+				"bar": {
+					Created:  time.Date(1970, time.January, 1, 1, 0, 0, 3000000, time.Local),
+					Uploaded: time.Date(1970, time.January, 1, 1, 0, 0, 4000000, time.Local),
+				},
+				"baz": {
+					Created:  time.Date(1970, time.January, 1, 1, 0, 0, 3000000, time.Local),
+					Uploaded: time.Date(1970, time.January, 1, 1, 0, 0, 4000000, time.Local),
+				},
+				"foo": {
+					Created:  time.Date(1970, time.January, 1, 1, 0, 0, 1000000, time.Local),
+					Uploaded: time.Date(1970, time.January, 1, 1, 0, 0, 2000000, time.Local),
+				},
 			},
 		},
-	}, {
-		name:         "just children",
-		responseBody: []byte(`{"child":["hello", "world"]}`),
-		wantErr:      false,
-		want:         map[string]metrics.TagMetadata{},
-	}, {
-		name:         "not json",
-		responseBody: []byte("notjson"),
-		want:         map[string]metrics.TagMetadata{},
-		wantErr:      true,
-	}}
+		{
+			name:         "just children",
+			responseBody: []byte(`{"child":["hello", "world"]}`),
+			wantErr:      false,
+			want:         map[string]metrics.TagMetadata{},
+		},
+		{
+			name:         "not json",
+			responseBody: []byte("notjson"),
+			want:         map[string]metrics.TagMetadata{},
+			wantErr:      true,
+		},
+	}
 
 	for _, tc := range cases {
 		testCase := tc
@@ -141,7 +145,7 @@ func TestGoogleProvider_ListImageTag(t *testing.T) {
 
 			tags, err := gProv.ListImageTag(fmt.Sprintf("%s/%s", u.Host, repoName))
 			if (err != nil) != testCase.wantErr {
-				t.Errorf("List() wrong error: %v, want %v: %v\n", (err != nil), testCase.wantErr, err)
+				t.Errorf("List() wrong error: %v, want %v: %v\n", err != nil, testCase.wantErr, err)
 			}
 			assert.Equal(t, testCase.want, tags)
 		})
