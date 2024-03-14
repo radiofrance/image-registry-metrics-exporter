@@ -5,7 +5,7 @@ go 1.21.5
 require (
 	github.com/aptible/supercronic v0.2.29
 	github.com/go-co-op/gocron/v2 v2.2.6
-	github.com/google/go-containerregistry v0.17.0
+	github.com/google/go-containerregistry v0.19.1
 	github.com/gorilla/mux v1.8.1
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.17.0
