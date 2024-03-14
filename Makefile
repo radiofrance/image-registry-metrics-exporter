@@ -14,11 +14,8 @@ help: ## Display this message
 ## ----------------------
 ##
 
-artifact: ## Compile app from sources (linux)
-	@CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o gobin ./cmd/image-registry-metrics-exporter
-
-artifact.osx: ## Compile app from sources (osx)
-	@CGO_ENABLED=0 GOARCH=amd64 GOOS=darwin go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o gobin ./cmd/image-registry-metrics-exporter
+artifact: ## Generate binary in dist folder
+	goreleaser build --clean --snapshot --single-target
 
 image-ci: ## Build an image for CI Test Helm
 	docker build . --tag "ghcr.io/radiofrance/image-registry-metrics-exporter:ci"
