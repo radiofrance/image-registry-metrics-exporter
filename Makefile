@@ -17,7 +17,7 @@ help: ## Display this message
 artifact: ## Generate binary in dist folder
 	goreleaser build --clean --snapshot --single-target
 
-image-ci: ## Build an image for CI Test Helm
+image.ci: ## Build an image for CI Test Helm
 	docker build . --tag "ghcr.io/radiofrance/image-registry-metrics-exporter:ci"
 
 ##
@@ -52,6 +52,12 @@ test: ## Run tests
         sed 's/PAUSE/$(BLUE)PAUSE$(RESET)/g' | \
         sed 's/PASS/$(GREEN)PASS$(RESET)/g' | \
         sed 's/FAIL/$(RED)FAIL$(RESET)/g'
+
+ct.lint: ## Lint helm chart
+	@docker run --rm -ti -v $$PWD:/docker -w /docker  quay.io/helmpack/chart-testing:v3.10.1 bash -c " \
+		git config --global --add safe.directory /docker; \
+		ct lint --target-branch=main; \
+	"
 
 ##
 ## ----------------------
