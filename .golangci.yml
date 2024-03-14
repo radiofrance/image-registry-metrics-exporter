@@ -24,6 +24,7 @@ linters:
     - revive            # replacement for golint, force comment on Exported vars => Yes, we should force it, but let's do baby steps
     - tagliatelle       # A linter that handles struct tags. We want both snake_case and camelCase struct tags to decode json payloads
     - wsl               # Whitespace Linter - Forces you to use empty lines! => We don't care
+    - perfsprint        # We prefer readability over performance
     - maligned          # Disable because they are deprecated and throw warning in logs
     - interfacer        # Disable because they are deprecated and throw warning in logs
     - golint            # Disable because they are deprecated and throw warning in logs
