@@ -11,7 +11,7 @@ require (
 	github.com/prometheus/client_golang v1.17.0
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.9.0
-	go.uber.org/ratelimit v0.3.0
+	go.uber.org/ratelimit v0.3.1
 )
 
 require (
