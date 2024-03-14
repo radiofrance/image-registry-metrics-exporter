@@ -4,6 +4,8 @@ cloud.google.com/go/compute/metadata v0.2.3 h1:mg4jlk7mCAj6xXp9UJ4fjI9VUI5rubuGB
 cloud.google.com/go/compute/metadata v0.2.3/go.mod h1:VAV5nSsACxMJvgaAuX6Pk2AawlZn8kiOGuCv6gTkwuA=
 github.com/aptible/supercronic v0.2.28 h1:b3LiHnwyXeAJPdWcEXnuWR6y38Dn2iMAW30rrQagW/g=
 github.com/aptible/supercronic v0.2.28/go.mod h1:84URRjD4iBPig2KhnSB5kWJIk8PTxKwH3VUSTF1xJYg=
+github.com/aptible/supercronic v0.2.29 h1:I+3RoDspAs/ySQO+MQd6genE07csDV/ErhFOtACT5oo=
+github.com/aptible/supercronic v0.2.29/go.mod h1:84URRjD4iBPig2KhnSB5kWJIk8PTxKwH3VUSTF1xJYg=
 github.com/benbjohnson/clock v1.3.5 h1:VvXlSJBzZpA/zum6Sj74hxwYI2DIxRWuNIoXAzHZz5o=
 github.com/benbjohnson/clock v1.3.5/go.mod h1:J11/hYXuz8f4ySSvYwY0FKfm+ezbsZBKZxNJlLklBHA=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
