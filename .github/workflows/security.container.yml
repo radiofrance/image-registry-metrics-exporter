@@ -23,7 +23,7 @@ jobs:
         with:
           framework: dockerfile
           skip_check: CKV_DOCKER_2
-      - uses: github/codeql-action/upload-sarif@fe23b5a3e1de4ae7f64965059233ee74e959035e # tag=codeql-bundle-20221211
+      - uses: github/codeql-action/upload-sarif@896079047b4bb059ba6f150a5d87d47dde99e6e5 # codeql-bundle-20221211
         if: always()
         with:
           category: checkov-helm
