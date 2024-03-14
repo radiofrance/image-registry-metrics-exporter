@@ -1,4 +1,4 @@
-FROM docker.io/golang:1.21.5 as builder
+FROM docker.io/golang:1.22.1 as builder
 ARG VERSION=devel
 
 WORKDIR /build
@@ -6,7 +6,8 @@ COPY . .
 
 RUN CGO_ENABLED=0 go build -ldflags="-w -s -X 'main.version=${VERSION}'" ./cmd/image-registry-metrics-exporter
 
-FROM docker.io/alpine:3.19.0
+FROM docker.io/alpine:3.19.1
+
 # renovate: datasource=repology depName=alpine_3_18/ca-certificates versioning=loose
 ARG CA_CERTIFICATES_VERSION=20230506-r0
 
