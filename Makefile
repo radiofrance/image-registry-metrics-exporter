@@ -40,9 +40,21 @@ lint: ## Lint source code
 lint.fix: ## Lint and fix source code
 	golangci-lint run --fix -v
 
-test: ## Run unit tests (go test)
-	@echo "### Running unit tests ..."
-	go test -v ./... -coverprofile coverage.out
+PKG := "./..."
+RUN := ".*"
+RED := $(shell tput setaf 1)
+GREEN := $(shell tput setaf 2)
+BLUE := $(shell tput setaf 4)
+RESET := $(shell tput sgr0)
+
+.PHONY: test
+test: ## Run tests
+	@go test -v -race -failfast -coverprofile coverage.output -run $(RUN) $(PKG) | \
+        sed 's/RUN/$(BLUE)RUN$(RESET)/g' | \
+        sed 's/CONT/$(BLUE)CONT$(RESET)/g' | \
+        sed 's/PAUSE/$(BLUE)PAUSE$(RESET)/g' | \
+        sed 's/PASS/$(GREEN)PASS$(RESET)/g' | \
+        sed 's/FAIL/$(RED)FAIL$(RESET)/g'
 
 ##
 ## ----------------------
