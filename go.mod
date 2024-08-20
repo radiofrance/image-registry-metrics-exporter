@@ -5,7 +5,7 @@ go 1.22.1
 require (
 	github.com/aptible/supercronic v0.2.29
 	github.com/go-co-op/gocron/v2 v2.2.6
-	github.com/google/go-containerregistry v0.19.1
+	github.com/google/go-containerregistry v0.20.2
 	github.com/gorilla/mux v1.8.1
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.19.0
@@ -22,7 +22,7 @@ require (
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/containerd/stargz-snapshotter/estargz v0.15.1 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
-	github.com/docker/cli v24.0.7+incompatible // indirect
+	github.com/docker/cli v27.1.1+incompatible // indirect
 	github.com/docker/distribution v2.8.3+incompatible // indirect
 	github.com/docker/docker v24.0.7+incompatible // indirect
 	github.com/docker/docker-credential-helpers v0.8.0 // indirect
