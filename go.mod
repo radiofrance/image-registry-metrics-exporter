@@ -4,7 +4,7 @@ go 1.22.1
 
 require (
 	github.com/aptible/supercronic v0.2.29
-	github.com/go-co-op/gocron/v2 v2.2.6
+	github.com/go-co-op/gocron/v2 v2.12.1
 	github.com/google/go-containerregistry v0.19.1
 	github.com/gorilla/mux v1.8.1
 	github.com/pkg/errors v0.9.1
@@ -54,9 +54,9 @@ require (
 	github.com/vbatts/tar-split v0.11.5 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/exp v0.0.0-20231219180239-dc181d75b848 // indirect
+	golang.org/x/exp v0.0.0-20240613232115-7f521ea00fb8 // indirect
 	golang.org/x/oauth2 v0.16.0 // indirect
-	golang.org/x/sync v0.5.0 // indirect
+	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.16.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
