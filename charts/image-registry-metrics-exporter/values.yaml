@@ -27,7 +27,7 @@ commonAnnotations: {}
 
 ## irme -- Image Registry Metrics exporter configuration
 irme:
-  ## irme.info -- Image Registry Metrics exporter log verbosity (fatal, error, warning, info, debug)
+  ## irme.logLevel -- Image Registry Metrics exporter log verbosity (fatal, error, warning, info, debug)
   logLevel: info
   ## irme.credentials - Image Registry Metrics exporter credentials for google. value or fromSecret must be set, not both.
   credentials:
@@ -37,7 +37,7 @@ irme:
     fromSecret:
       ## irme.credentials.fromSecret.name - Image Registry Metrics exporter google credentials secret name
       name: {}
-      ## irme.credentials.fromSecret - Image Registry Metrics exporter google credentials secret key
+      ## irme.credentials.fromSecret.key - Image Registry Metrics exporter google credentials secret key
       key: {}
   ## irme.configuration - Image Registry Metrics configuration. see README.MD for more information.
   configuration: |-
@@ -69,20 +69,20 @@ image:
 ## replicaCount -- number of replicas of the Image Registry Metrics exporter deployment
 replicaCount: 1
 
-## podAffinityPreset -- pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
+## podAffinity -- pod affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
 ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
 podAffinity: ""
-## podAntiAffinityPreset -- pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
+## podAntiAffinity -- pod anti-affinity preset. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
 ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
 podAntiAffinity: soft
-## Node affinity preset
+## nodeAffinity
 ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
 nodeAffinity:
-  ## nodeAffinityPreset.type -- node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
+  ## nodeAffinity.type -- node affinity preset type. Ignored if `affinity` is set. Allowed values: `soft` or `hard`
   type: ""
-  ## nodeAffinityPreset.key -- node label key to match. Ignored if `affinity` is set
+  ## nodeAffinity.key -- node label key to match. Ignored if `affinity` is set
   key: ""
-  ## nodeAffinityPreset.values -- node label values to match. Ignored if `affinity` is set
+  ## nodeAffinity.values -- node label values to match. Ignored if `affinity` is set
   ## e.g:
   ## values:
   ##   - e2e-az1
@@ -205,7 +205,7 @@ service:
 
 ## metrics -- metrics parameters
 metrics:
-  ## serviceMonitor -- Prometheus Operator ServiceMonitor configuration
+  ## metrics.serviceMonitor -- Prometheus Operator ServiceMonitor configuration
   serviceMonitor:
     ## metrics.serviceMonitor.enabled -- if `true`, creates a Prometheus Operator ServiceMonitor (also requires `metrics.enabled` to be `true`)
     enabled: false
@@ -224,7 +224,7 @@ metrics:
     ## metrics.serviceMonitor.metricRelabelings -- MetricRelabelConfigs to apply to samples before ingestion
     metricRelabelings: []
 
-    ## prometheusRule -- Prometheus Operator PrometheusRule configuration
+    ## metrics.prometheusRule -- Prometheus Operator PrometheusRule configuration
   prometheusRule:
     ## metrics.prometheusRule.enabled -- if `true`, creates a Prometheus Operator PrometheusRule
     ## (also requires `metrics.enabled` to be `true` and `metrics.prometheusRule.rules`)
