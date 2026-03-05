@@ -30,8 +30,11 @@ func TestLoad(t *testing.T) {
 			MaxConcurrentJobs: 5,
 			Provider:          "fake",
 		}
+
 		var registries []conf.Registry
+
 		conf.AddProvider(&fake)
+
 		if err != nil {
 			require.NoError(t, err)
 		}
@@ -41,17 +44,20 @@ func TestLoad(t *testing.T) {
 	})
 	t.Run("load a wrong type field registry in configuration file", func(t *testing.T) {
 		t.Parallel()
+
 		_, err := conf.Load("./tests/wrongtyperegistry/")
-		assert.Regexp(t, regexp.MustCompile(".*failed to unmarshal configuration file:.*"), err)
+		assert.Regexp(t, ".*failed to unmarshal configuration file:.*", err)
 	})
 	t.Run("load a wrong type field cron in configuration file", func(t *testing.T) {
 		t.Parallel()
+
 		_, err := conf.Load("./tests/wrongtypecron/")
-		assert.Regexp(t, regexp.MustCompile(".*failed to unmarshal configuration file:.*"), err)
+		assert.Regexp(t, ".*failed to unmarshal configuration file:.*", err)
 	})
 	t.Run("load a malformed yaml configuration file", func(t *testing.T) {
 		t.Parallel()
+
 		_, err := conf.Load("./tests/malformed/")
-		assert.Regexp(t, regexp.MustCompile(".*could not find expected.*"), err)
+		assert.Regexp(t, ".*could not find expected.*", err)
 	})
 }

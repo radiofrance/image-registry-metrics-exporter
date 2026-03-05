@@ -18,8 +18,11 @@ func UpdateReady(isReady bool) {
 
 func Ready(writer http.ResponseWriter, _ *http.Request) {
 	mutexReadiness.RLock()
+
 	isReady := ready
+
 	mutexReadiness.RUnlock()
+
 	if isReady {
 		writer.WriteHeader(http.StatusOK)
 	} else {

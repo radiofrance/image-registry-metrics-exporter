@@ -59,17 +59,21 @@ func Load(path string) (Config, error) {
 	vip.AddConfigPath(".")
 	vip.AddConfigPath(path)
 
-	if err := vip.ReadInConfig(); err != nil {
+	err := vip.ReadInConfig()
+	if err != nil {
 		return Config{}, errors.New("failed to open configuration file: " + err.Error())
 	}
 
 	var registries []Registry
-	if err := vip.UnmarshalKey("registries", &registries); err != nil {
+
+	err = vip.UnmarshalKey("registries", &registries)
+	if err != nil {
 		return Config{}, errors.New("failed to unmarshal configuration file: " + err.Error())
 	}
 
 	for reg := range registries {
 		AddProvider(&registries[reg])
+
 		for _, filter := range registries[reg].ImagesFilters {
 			r, err := regexp.Compile(filter)
 			if err != nil {
@@ -78,6 +82,7 @@ func Load(path string) (Config, error) {
 				registries[reg].ImagesRegex = append(registries[reg].ImagesRegex, r)
 			}
 		}
+
 		for _, filter := range registries[reg].TagsFilters {
 			r, err := regexp.Compile(filter)
 			if err != nil {
@@ -89,14 +94,18 @@ func Load(path string) (Config, error) {
 	}
 
 	var cron string
-	if err := vip.UnmarshalKey("cron", &cron); err != nil {
+
+	err = vip.UnmarshalKey("cron", &cron)
+	if err != nil {
 		return Config{}, errors.New("failed to unmarshal configuration file: " + err.Error())
 	}
+
 	if len(cron) == 0 {
 		return Config{}, errors.New("Cron time must be set in configuration file")
 	}
 
 	slog.Info(fmt.Sprintf("Loaded configuration from %s", vip.ConfigFileUsed()))
+
 	config := Config{Registries: registries, Cron: cron}
 
 	return config, nil

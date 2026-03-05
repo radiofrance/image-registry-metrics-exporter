@@ -1,3 +1,4 @@
+//nolint:gosmopolitan
 package fake_test
 
 import (
@@ -12,11 +13,12 @@ import (
 
 func TestFake_GetImagesList(t *testing.T) {
 	t.Parallel()
+
 	dataset := []struct {
 		title          string
 		fake           fake.OCI
 		data           []string
-		expectedResult interface{}
+		expectedResult any
 	}{{
 		title: "test simple object",
 		fake: *fake.New(
@@ -25,9 +27,9 @@ func TestFake_GetImagesList(t *testing.T) {
 		expectedResult: []string{"image1", "image2"},
 	}}
 	for _, data := range dataset {
-		data := data
 		t.Run(data.title, func(t *testing.T) {
 			t.Parallel()
+
 			result, _ := data.fake.GetImagesList("random-string")
 			assert.Equal(t, data.expectedResult, result)
 		})
@@ -36,11 +38,12 @@ func TestFake_GetImagesList(t *testing.T) {
 
 func TestFake_ListImageTag(t *testing.T) {
 	t.Parallel()
+
 	dataset := []struct {
 		title          string
 		fake           fake.OCI
 		image          string
-		expectedResult interface{}
+		expectedResult any
 	}{
 		{
 			title: "test simple object with / in image",
@@ -72,9 +75,9 @@ func TestFake_ListImageTag(t *testing.T) {
 		},
 	}
 	for _, data := range dataset {
-		data := data
 		t.Run(data.title, func(t *testing.T) {
 			t.Parallel()
+
 			result, _ := data.fake.ListImageTag(data.image)
 			assert.Equal(t, data.expectedResult, result)
 		})

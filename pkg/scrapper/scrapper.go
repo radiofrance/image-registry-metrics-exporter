@@ -19,6 +19,7 @@ func Scrape(registries []conf.Registry, tags chan<- metrics.Job) error {
 	if len(registries) == 0 {
 		slog.Warn("No registries have been set. Please provide registries in configuration file.")
 	}
+
 	for _, reg := range registries {
 		filteredImageList, err := GetFilteredImagesList(reg)
 		if err != nil {
@@ -28,6 +29,7 @@ func Scrape(registries []conf.Registry, tags chan<- metrics.Job) error {
 
 		GetImagesTags(reg, filteredImageList, tags)
 	}
+
 	return nil
 }
 
@@ -47,6 +49,7 @@ func filterImagesList(filters []*regexp.Regexp, imagesNames *[]string) []string 
 			}
 		}
 	}
+
 	return filteredCatalog
 }
 
@@ -69,6 +72,7 @@ func filterTagsList(
 			}
 		}
 	}
+
 	return filteredTags
 }
 
@@ -115,6 +119,7 @@ func GetImageTags(
 		if err != nil {
 			slog.Error(fmt.Sprintf("cannot list tags of %s: %v", reg.Domain+"/"+image, err))
 		}
+
 		filteredTags := filterTagsList(extractedTags, reg.TagsRegex)
 		if err != nil {
 			slog.Error(fmt.Sprintf("cannot filter tags of %s: %v", reg.Domain+"/"+image, err))
@@ -132,18 +137,21 @@ func GetImageTags(
 
 // GetImagesTags is a job wrapper which works on a list of image names. For each image, it calls GetImageTags.
 func GetImagesTags(reg conf.Registry, imagesNames []string, tags chan<- metrics.Job) {
-	max := reg.MaxConcurrentJobs
-	images := make(chan string, max)
+	maxCurrJobs := reg.MaxConcurrentJobs
+	images := make(chan string, maxCurrJobs)
 	wgCatalog := &sync.WaitGroup{}
 	rate := ratelimit.New(reg.RateLimitAPI)
-	for i := 0; i < max; i++ {
+
+	for range maxCurrJobs {
 		wgCatalog.Add(1)
+
 		go GetImageTags(reg, wgCatalog, images, tags, rate)
 	}
 
 	for _, imageName := range imagesNames {
 		images <- imageName
 	}
+
 	close(images)
 	wgCatalog.Wait()
 }

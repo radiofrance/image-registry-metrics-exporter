@@ -48,6 +48,7 @@ func main() {
 		slog.Error(fmt.Sprintf("failed to generate metrics struct: %v", err))
 		os.Exit(1)
 	}
+
 	tags.GenerateMetricsOn()
 
 	bindAddrHealth := flag.String("bind-address-health", ":8080", "address:port to bind status endpoints to")
@@ -101,24 +102,30 @@ func main() {
 		slog.Error(fmt.Sprintf("failed to create cron scheduler: %v", err))
 		os.Exit(1)
 	}
+
 	defer func() { _ = scheduler.Shutdown() }()
 
-	if _, err = scheduler.NewJob(
+	_, err = scheduler.NewJob(
 		gocron.CronJob(config.Cron, false),
 		gocron.NewTask(func() {
 			logger := gocron.NewLogger(gocron.LogLevelInfo)
 			logger.Info("Starting scraping metrics")
-			if err := scrapper.Scrape(config.Registries, tags.Queue); err != nil {
+
+			err := scrapper.Scrape(config.Registries, tags.Queue)
+			if err != nil {
 				logger.Error(fmt.Sprintf("failed to scrape images metadata: %v", err))
 				return
 			}
+
 			logger.Info(fmt.Sprintf("Getting metrics is done, next schedule at %s",
 				cronexpr.MustParse(config.Cron).Next(time.Now())))
 		}),
-	); err != nil {
+	)
+	if err != nil {
 		slog.Error(fmt.Sprintf("failed to run cron job: %v", err))
 		return
 	}
+
 	scheduler.Start()
 
 	var waitGroup sync.WaitGroup
@@ -126,7 +133,9 @@ func main() {
 
 	go func() {
 		defer waitGroup.Done()
-		if err := metricsSrv.ListenAndServe(); err != nil {
+
+		err := metricsSrv.ListenAndServe()
+		if err != nil {
 			if errors.Is(err, http.ErrServerClosed) {
 				slog.Info("Metrics server closed")
 			} else {
@@ -136,7 +145,9 @@ func main() {
 	}()
 	go func() {
 		defer waitGroup.Done()
-		if err := healthSrv.ListenAndServe(); err != nil {
+
+		err := healthSrv.ListenAndServe()
+		if err != nil {
 			if errors.Is(err, http.ErrServerClosed) {
 				slog.Info("Http server closed")
 			} else {
@@ -144,6 +155,7 @@ func main() {
 			}
 		}
 	}()
+
 	controllers.UpdateHealth(true)
 	controllers.UpdateReady(true)
 
@@ -152,10 +164,13 @@ func main() {
 	signal.Notify(c, syscall.Signal(0xf)) // syscall.Signal(0xf) == SIGTERM
 	<-c
 	time.Sleep(15 * time.Second) // We give time to the readiness probe to be down
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
 	defer cancel()
+
 	_ = metricsSrv.Shutdown(ctx)
 	_ = healthSrv.Shutdown(ctx)
+
 	waitGroup.Wait()
 	slog.Info("Shutting down")
 }
