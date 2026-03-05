@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: '3.8'
+          python-version: '3.14'
           check-latest: true
 
       - uses: bridgecrewio/checkov-action@a6b06158ca30c135b38291f4fa0da67d188ca8f4
