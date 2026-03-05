@@ -68,9 +68,9 @@ func Test_filterTagsList(t *testing.T) {
 		},
 	}
 	for _, data := range dataset {
-		data := data
 		t.Run(data.title, func(t *testing.T) {
 			t.Parallel()
+
 			result := filterTagsList(data.args.tags, data.args.filters)
 			assert.Equal(t, data.expectedResult, result)
 		})
@@ -169,9 +169,9 @@ func Test_filterImagesList(t *testing.T) {
 		},
 	}
 	for _, data := range dataset {
-		data := data
 		t.Run(data.title, func(t *testing.T) {
 			t.Parallel()
+
 			result := filterImagesList(data.args.filters, data.args.catalog)
 			assert.Equal(t, data.expectedResult, result)
 		})

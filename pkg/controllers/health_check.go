@@ -23,8 +23,11 @@ func UpdateHealth(isHealthy bool) {
 
 func HealthCheck(writer http.ResponseWriter, _ *http.Request) {
 	mutexHealthCheck.RLock()
+
 	isHealthy := healthy
+
 	mutexHealthCheck.RUnlock()
+
 	if isHealthy {
 		writer.WriteHeader(http.StatusOK)
 		_, _ = writer.Write([]byte(HealthyMessage))

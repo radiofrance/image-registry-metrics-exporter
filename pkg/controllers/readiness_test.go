@@ -19,7 +19,7 @@ func TestNotReadyIfNotSet(t *testing.T) {
 
 		controllers.Ready(response, request)
 
-		assert.EqualValues(t, http.StatusInternalServerError, response.Code)
+		assert.Equal(t, http.StatusInternalServerError, response.Code)
 	})
 }
 
@@ -32,6 +32,6 @@ func TestReadyIfSet(t *testing.T) {
 		controllers.UpdateReady(true)
 		controllers.Ready(response, request)
 
-		assert.EqualValues(t, http.StatusOK, response.Code)
+		assert.Equal(t, http.StatusOK, response.Code)
 	})
 }

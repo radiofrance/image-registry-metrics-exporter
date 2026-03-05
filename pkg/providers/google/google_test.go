@@ -1,3 +1,4 @@
+//nolint:gosmopolitan
 package google_test
 
 import (
@@ -6,7 +7,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"regexp"
 	"testing"
 	"time"
 
@@ -24,7 +24,7 @@ func TestGoogleProvider_ImagesCatalog(t *testing.T) {
 		title           string
 		activateBackend bool
 		expectedErr     error
-		expectedResult  interface{}
+		expectedResult  any
 	}{
 		{
 			title:           "test with fake crane",
@@ -40,27 +40,31 @@ func TestGoogleProvider_ImagesCatalog(t *testing.T) {
 		},
 	}
 	for _, data := range dataset {
-		data := data
 		t.Run(data.title, func(t *testing.T) {
 			t.Parallel()
+
 			gProv := google.New()
 			repo := ""
+
 			if data.activateBackend {
 				s := httptest.NewServer(registry.New())
 				defer s.Close()
+
 				u, err := url.Parse(s.URL)
-				if err != nil {
-					t.Fatal(err)
-				}
+				require.NoError(t, err)
+
 				repo = u.Host
 			}
+
 			list, err := gProv.GetImagesList(repo)
 			assert.Equal(t, data.expectedResult, list)
+
 			if data.expectedErr == nil {
 				require.NoError(t, err)
 				return
 			}
-			assert.Regexp(t, regexp.MustCompile(data.expectedErr.Error()), err)
+
+			assert.Regexp(t, data.expectedErr.Error(), err)
 		})
 	}
 }
@@ -120,33 +124,36 @@ func TestGoogleProvider_ListImageTag(t *testing.T) {
 		testCase := tc
 		t.Run(testCase.name, func(t *testing.T) {
 			t.Parallel()
+
 			gProv := google.New()
 			repoName := "ubuntu"
 			tagsPath := fmt.Sprintf("/v2/%s/tags/list", repoName)
+
 			server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 				switch request.URL.Path {
 				case "/v2/":
 					writer.WriteHeader(http.StatusOK)
 				case tagsPath:
-					if request.Method != http.MethodGet {
-						t.Errorf("Method; got %v, want %v", request.Method, http.MethodGet)
-					}
+					assert.Equal(t, http.MethodGet, request.Method)
 
-					writer.Write(testCase.responseBody) //nolint:errcheck
+					_, err := writer.Write(testCase.responseBody)
+					assert.NoError(t, err)
 				default:
 					t.Fatalf("Unexpected path: %v", request.URL.Path)
 				}
 			}))
 			defer server.Close()
+
 			u, err := url.Parse(server.URL)
-			if err != nil {
-				t.Fatalf("url.Parse(%v) = %v", server.URL, err)
-			}
+			require.NoError(t, err)
 
 			tags, err := gProv.ListImageTag(fmt.Sprintf("%s/%s", u.Host, repoName))
-			if (err != nil) != testCase.wantErr {
-				t.Errorf("List() wrong error: %v, want %v: %v\n", err != nil, testCase.wantErr, err)
+			if testCase.wantErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
 			}
+
 			assert.Equal(t, testCase.want, tags)
 		})
 	}

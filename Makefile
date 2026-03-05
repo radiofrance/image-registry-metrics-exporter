@@ -26,32 +26,37 @@ image-ci: ## Build an image for CI Test Helm
 ## ----------------------
 ##
 
-qa: lint test ## Run all Q.A
+qa: lint test
 
-lint.install: ## Install Go linter
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint
+# renovate: datasource=github-releases depName=radiofrance/lint-config
+LINT_CONFIG_VERSION = v1.1.1
 
 lint: ## Lint source code
-	golangci-lint run -v
+	curl -o .golangci.yml -sS \
+		"https://raw.githubusercontent.com/radiofrance/lint-config/$(LINT_CONFIG_VERSION)/.golangci.yml"
+	golangci-lint run --verbose
 
-lint.fix: ## Lint and fix source code
-	golangci-lint run --fix -v
-
-PKG := "./..."
-RUN := ".*"
-RED := $(shell tput setaf 1)
-GREEN := $(shell tput setaf 2)
-BLUE := $(shell tput setaf 4)
-RESET := $(shell tput sgr0)
+PKG = ./...
+RUN = ".*"
+RED = $(shell tput setaf 1)
+GREEN = $(shell tput setaf 2)
+BLUE = $(shell tput setaf 4)
+RESET = $(shell tput sgr0)
 
 .PHONY: test
 test: ## Run tests
-	@go test -v -race -failfast -coverprofile coverage.output -run $(RUN) $(PKG) | \
+	@go test -v -race -failfast -coverprofile coverage.out -covermode atomic -run $(RUN) $(PKG) | \
         sed 's/RUN/$(BLUE)RUN$(RESET)/g' | \
         sed 's/CONT/$(BLUE)CONT$(RESET)/g' | \
         sed 's/PAUSE/$(BLUE)PAUSE$(RESET)/g' | \
         sed 's/PASS/$(GREEN)PASS$(RESET)/g' | \
         sed 's/FAIL/$(RED)FAIL$(RESET)/g'
+
+coverage: test ## Run test, then generate coverage html report
+	@go tool cover -html=coverage.out -o coverage.html
+	@echo "To open the html coverage file, use one of the following commands:"
+	@echo "open coverage.html on mac"
+	@echo "xdg-open coverage.html on linux"
 
 ##
 ## ----------------------

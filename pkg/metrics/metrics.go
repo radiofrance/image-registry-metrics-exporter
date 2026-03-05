@@ -10,8 +10,8 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-// metricsExporterConf is a struct which contains config to generate metrics on an images tags set.
-type metricsExporterConf struct {
+// ExporterConf is a struct which contains config to generate metrics on an images tags set.
+type ExporterConf struct {
 	MetricsUploadedTime *prometheus.GaugeVec
 	MetricsCreatedTime  *prometheus.GaugeVec
 	Registry            *prometheus.Registry
@@ -31,9 +31,9 @@ type TagMetadata struct {
 	Uploaded time.Time
 }
 
-// New generate a metricsExporterConf struct.
-func New() (*metricsExporterConf, error) {
-	tag := metricsExporterConf{}
+// New generate a ExporterConf struct.
+func New() (*ExporterConf, error) {
+	tag := ExporterConf{}
 	tag.Queue = make(chan Job)
 	tag.MetricsUploadedTime = prometheus.NewGaugeVec(prometheus.GaugeOpts{
 		Name: "container_image_tag_uploaded_timestamp",
@@ -44,16 +44,20 @@ func New() (*metricsExporterConf, error) {
 		Help: "Build timestamp of this container image tag",
 	}, []string{"image", "tag"})
 
-	if err := prometheus.DefaultRegisterer.Register(tag.MetricsUploadedTime); err != nil {
+	err := prometheus.DefaultRegisterer.Register(tag.MetricsUploadedTime)
+	if err != nil {
 		return &tag, fmt.Errorf("cannot register metrics : %w", err)
 	}
-	if err := prometheus.DefaultRegisterer.Register(tag.MetricsCreatedTime); err != nil {
+
+	err = prometheus.DefaultRegisterer.Register(tag.MetricsCreatedTime)
+	if err != nil {
 		return &tag, fmt.Errorf("cannot register metrics : %w", err)
 	}
+
 	return &tag, nil
 }
 
-func (tag *metricsExporterConf) worker() {
+func (tag *ExporterConf) Worker() {
 	for data := range tag.Queue {
 		slog.Info(fmt.Sprintf("updating metrics for %s:%s", data.ImageName, data.TagName))
 		tag.MetricsUploadedTime.
@@ -72,8 +76,8 @@ func Handler() http.Handler {
 }
 
 // GenerateMetricsOn create jobs to consume Queue and publish metrics on prom.
-func (tag *metricsExporterConf) GenerateMetricsOn() {
+func (tag *ExporterConf) GenerateMetricsOn() {
 	for w := 1; w <= 3; w++ {
-		go tag.worker()
+		go tag.Worker()
 	}
 }

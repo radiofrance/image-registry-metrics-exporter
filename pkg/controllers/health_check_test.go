@@ -19,8 +19,8 @@ func TestUnhealthyIfNotSet(t *testing.T) {
 
 		controllers.HealthCheck(response, request)
 
-		assert.EqualValues(t, http.StatusInternalServerError, response.Code)
-		assert.EqualValues(t, controllers.UnhealthyMessage, response.Body.String())
+		assert.Equal(t, http.StatusInternalServerError, response.Code)
+		assert.Equal(t, controllers.UnhealthyMessage, response.Body.String())
 	})
 }
 
@@ -33,8 +33,8 @@ func TestHealthCheckIfSetHealthy(t *testing.T) {
 		controllers.UpdateHealth(true)
 		controllers.HealthCheck(response, request)
 
-		assert.EqualValues(t, http.StatusOK, response.Code)
-		assert.EqualValues(t, controllers.HealthyMessage, response.Body.String())
+		assert.Equal(t, http.StatusOK, response.Code)
+		assert.Equal(t, controllers.HealthyMessage, response.Body.String())
 	})
 }
 
@@ -47,7 +47,7 @@ func TestHealthCheckIfSetNotHealthy(t *testing.T) {
 		controllers.UpdateHealth(false)
 		controllers.HealthCheck(response, request)
 
-		assert.EqualValues(t, http.StatusInternalServerError, response.Code)
-		assert.EqualValues(t, controllers.UnhealthyMessage, response.Body.String())
+		assert.Equal(t, http.StatusInternalServerError, response.Code)
+		assert.Equal(t, controllers.UnhealthyMessage, response.Body.String())
 	})
 }

@@ -57,7 +57,6 @@ func TestGenerateMetricsOn(t *testing.T) { //nolint:paralleltest // cannot outpu
 		},
 	}
 	for _, data := range dataset { //nolint:paralleltest // cannot output metrics in parallels
-		data := data
 		t.Run(data.title, func(t *testing.T) {
 			go func() {
 				tag.GenerateMetricsOn()
@@ -72,6 +71,7 @@ func TestGenerateMetricsOn(t *testing.T) { //nolint:paralleltest // cannot outpu
 					}
 				}
 			}
+
 			time.Sleep(1 * time.Second)
 
 			for imageName, imageMetadata := range data.images {
