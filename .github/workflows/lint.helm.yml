@@ -13,7 +13,7 @@ jobs:
     name: Chart testing
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
           fetch-depth: 0
       - uses: azure/setup-helm@5119fcb9089d432beecbf79bb2c7915207344b78 # tag=v3.5
