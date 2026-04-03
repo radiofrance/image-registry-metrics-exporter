@@ -4,12 +4,12 @@ name: image-registry-metrics-exporter
 description: A Helm chart for Image Registry Metrics Exporter (IRME)
 
 type: application
-version: 0.2.1
-appVersion: v0.1.6
+version: 0.2.2
+appVersion: v0.1.8
 
 home: https://github.com/radiofrance/image-registry-metrics-exporter
 sources:
-  - https://github.com/radiofrance/image-registry-metrics-exporter/tree/main/chart
+  - https://github.com/radiofrance/image-registry-metrics-exporter/tree/main/charts/image-registry-metrics-exporter
 maintainers:
   - name: radiofrance
     email: radiofrance@users.noreply.github.com
